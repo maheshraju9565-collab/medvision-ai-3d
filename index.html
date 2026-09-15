@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,47 +6,56 @@
 
 <title>MedVision AI | 3D Medical Imaging</title>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
 <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+:root {
+    --bg: #050914;
+    --panel: #0b1220;
+    --panel2: #101a2d;
+    --border: #1c2b43;
+    --text: #eef6ff;
+    --muted: #91a4bd;
+    --blue: #3b82f6;
+    --cyan: #22d3ee;
+    --green: #22c55e;
+    --red: #ef4444;
+    --yellow: #f59e0b;
 }
 
-:root {
-    --bg: #07111f;
-    --panel: rgba(13, 28, 47, 0.92);
-    --panel2: rgba(17, 38, 61, 0.9);
-    --border: rgba(120, 190, 255, 0.18);
-    --text: #eef7ff;
-    --muted: #91a8bd;
-    --blue: #45b8ff;
-    --cyan: #54e6ff;
-    --green: #48e0a4;
-    --red: #ff5f6d;
-    --yellow: #ffc857;
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
     font-family: Inter, Arial, sans-serif;
     background:
-        radial-gradient(circle at 50% 20%, rgba(25, 100, 170, .22), transparent 35%),
-        linear-gradient(135deg, #040b14, #081827 55%, #06111d);
+        radial-gradient(circle at 20% 10%, rgba(34,211,238,.10), transparent 30%),
+        radial-gradient(circle at 80% 20%, rgba(59,130,246,.10), transparent 30%),
+        var(--bg);
     color: var(--text);
     min-height: 100vh;
-    overflow-x: hidden;
 }
 
-/* ---------------- NAVBAR ---------------- */
+button,
+input {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
 
 .navbar {
-    height: 72px;
+    height: 70px;
+    border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 28px;
-    border-bottom: 1px solid var(--border);
-    background: rgba(4, 12, 23, .88);
+    background: rgba(5,9,20,.85);
     backdrop-filter: blur(15px);
     position: sticky;
     top: 0;
@@ -63,64 +71,65 @@ body {
 }
 
 .logo-icon {
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 38px;
     border-radius: 12px;
-    background: linear-gradient(135deg, #4bdcff, #3978ff);
-    display: grid;
-    place-items: center;
-    font-size: 21px;
-    box-shadow: 0 0 25px rgba(69,184,255,.3);
-}
-
-.logo span {
-    color: var(--cyan);
-}
-
-.nav-right {
+    background: linear-gradient(135deg, var(--cyan), var(--blue));
     display: flex;
     align-items: center;
-    gap: 12px;
+    justify-content: center;
+    box-shadow: 0 0 25px rgba(34,211,238,.25);
 }
 
-.mode-btn,
-.nav-btn {
+.nav-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn {
     border: 1px solid var(--border);
-    background: rgba(255,255,255,.04);
     color: var(--text);
-    padding: 10px 15px;
-    border-radius: 9px;
-    cursor: pointer;
+    background: var(--panel);
+    padding: 10px 16px;
+    border-radius: 10px;
+    transition: .2s;
 }
 
-.nav-btn.primary {
-    background: linear-gradient(135deg, #248ddd, #356dff);
+.btn:hover {
+    border-color: var(--cyan);
+    transform: translateY(-1px);
+}
+
+.btn-primary {
     border: none;
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    color: white;
+    font-weight: 700;
 }
-
-/* ---------------- HERO ---------------- */
 
 .hero {
-    padding: 70px 30px 35px;
-    text-align: center;
-    max-width: 1100px;
+    max-width: 1400px;
     margin: auto;
+    padding: 55px 28px 30px;
 }
 
 .badge {
-    display: inline-block;
-    padding: 8px 14px;
-    border-radius: 30px;
-    background: rgba(66, 192, 255, .08);
-    border: 1px solid rgba(66,192,255,.2);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid rgba(34,211,238,.3);
+    background: rgba(34,211,238,.08);
     color: var(--cyan);
+    padding: 7px 13px;
+    border-radius: 30px;
     font-size: 13px;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
 }
 
 .hero h1 {
     font-size: clamp(38px, 6vw, 72px);
-    line-height: 1.02;
+    line-height: 1;
+    max-width: 900px;
     letter-spacing: -3px;
 }
 
@@ -129,336 +138,426 @@ body {
 }
 
 .hero p {
-    max-width: 700px;
-    margin: 22px auto 0;
+    margin-top: 20px;
     color: var(--muted);
-    font-size: 17px;
+    max-width: 760px;
     line-height: 1.7;
-}
-
-/* ---------------- MAIN ---------------- */
-
-.container {
-    width: min(1450px, 94%);
-    margin: auto;
+    font-size: 17px;
 }
 
 .dashboard {
+    max-width: 1400px;
+    margin: auto;
+    padding: 20px 28px 50px;
     display: grid;
-    grid-template-columns: 300px 1fr 330px;
+    grid-template-columns: 280px minmax(400px, 1fr) 320px;
     gap: 16px;
-    margin-top: 25px;
-    margin-bottom: 60px;
 }
 
 .panel {
-    background: var(--panel);
+    background: linear-gradient(180deg, rgba(16,26,45,.94), rgba(8,14,27,.94));
     border: 1px solid var(--border);
     border-radius: 18px;
     overflow: hidden;
-    box-shadow: 0 20px 70px rgba(0,0,0,.25);
+    box-shadow: 0 20px 60px rgba(0,0,0,.22);
 }
 
 .panel-header {
-    padding: 18px;
+    padding: 17px;
     border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.panel-header h3 {
-    font-size: 14px;
+    font-weight: 700;
 }
 
 .panel-body {
-    padding: 18px;
+    padding: 17px;
 }
 
-/* ---------------- UPLOAD ---------------- */
-
-.upload-box {
-    border: 1px dashed rgba(84,230,255,.45);
-    background: rgba(84,230,255,.035);
-    padding: 24px 14px;
-    border-radius: 14px;
-    text-align: center;
-    cursor: pointer;
-    transition: .25s;
-}
-
-.upload-box:hover {
-    background: rgba(84,230,255,.08);
-    transform: translateY(-2px);
-}
-
-.upload-icon {
-    font-size: 38px;
-    margin-bottom: 12px;
-}
-
-.upload-box strong {
-    display: block;
-    font-size: 14px;
-}
-
-.upload-box small {
-    color: var(--muted);
-    display: block;
-    margin-top: 7px;
-}
-
-input[type=file] {
-    display: none;
-}
-
-.file-name {
-    margin-top: 12px;
-    font-size: 12px;
-    color: var(--green);
-    word-break: break-word;
-}
-
-/* ---------------- BUTTONS ---------------- */
-
-.action-btn {
-    width: 100%;
-    margin-top: 13px;
-    padding: 13px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: 700;
-    color: white;
-    background: linear-gradient(135deg, #228fe1, #416fff);
-}
-
-.action-btn.secondary {
-    background: rgba(255,255,255,.05);
-    border: 1px solid var(--border);
-}
-
-/* ---------------- BODY PARTS ---------------- */
-
-.section-title {
+.section-label {
     font-size: 11px;
     color: var(--muted);
     text-transform: uppercase;
-    letter-spacing: 1px;
-    margin: 24px 0 10px;
+    letter-spacing: 1.3px;
+    margin-bottom: 9px;
 }
 
-.body-btn {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 11px 12px;
-    margin: 5px 0;
-    background: transparent;
-    border: 1px solid transparent;
-    border-radius: 9px;
-    color: var(--text);
-    cursor: pointer;
-    text-align: left;
+.upload-box {
+    border: 1px dashed #315170;
+    border-radius: 14px;
+    padding: 22px 12px;
+    text-align: center;
+    background: rgba(34,211,238,.025);
+    transition: .2s;
 }
 
-.body-btn:hover,
-.body-btn.active {
-    background: rgba(70,190,255,.09);
-    border-color: rgba(70,190,255,.2);
+.upload-box:hover {
+    border-color: var(--cyan);
+    background: rgba(34,211,238,.06);
 }
 
-.body-btn small {
+.upload-icon {
+    font-size: 30px;
+    margin-bottom: 8px;
+}
+
+.upload-box p {
     color: var(--muted);
+    font-size: 12px;
+    line-height: 1.5;
 }
 
-/* ---------------- 3D VIEWER ---------------- */
+.file-name {
+    color: var(--cyan);
+    margin-top: 10px;
+    font-size: 12px;
+    word-break: break-word;
+}
+
+input[type="file"] {
+    width: 100%;
+    margin-top: 12px;
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.analyze-btn {
+    width: 100%;
+    margin-top: 14px;
+    padding: 13px;
+    border: none;
+    border-radius: 11px;
+    color: white;
+    background: linear-gradient(135deg, #2563eb, #06b6d4);
+    font-weight: 800;
+    box-shadow: 0 8px 25px rgba(37,99,235,.22);
+}
+
+.analyze-btn:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+.anatomy-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.anatomy-btn {
+    background: #0b1425;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 9px 5px;
+    border-radius: 9px;
+    font-size: 12px;
+}
+
+.anatomy-btn:hover,
+.anatomy-btn.active {
+    color: white;
+    border-color: var(--cyan);
+    background: rgba(34,211,238,.08);
+}
+
+.small-btn {
+    width: 100%;
+    padding: 10px;
+    margin-top: 9px;
+    background: #0b1425;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+}
 
 .viewer {
-    min-height: 680px;
     position: relative;
+    min-height: 650px;
     background:
-        radial-gradient(circle at center, rgba(55,140,200,.12), transparent 45%),
-        #030b14;
+        radial-gradient(circle at center, rgba(34,211,238,.07), transparent 45%),
+        #030711;
 }
 
-.viewer canvas {
-    width: 100% !important;
-    height: 100% !important;
-    min-height: 680px;
-    display: block;
+#threeContainer {
+    position: absolute;
+    inset: 0;
 }
 
 .viewer-top {
     position: absolute;
+    z-index: 5;
     top: 15px;
     left: 15px;
     right: 15px;
     display: flex;
     justify-content: space-between;
-    z-index: 10;
     pointer-events: none;
 }
 
-.scan-status {
-    background: rgba(4,15,27,.85);
+.status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(5,9,20,.75);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 10px 13px;
-    font-size: 12px;
-    pointer-events: auto;
+    padding: 8px 11px;
+    border-radius: 20px;
+    font-size: 11px;
+    color: var(--muted);
+    backdrop-filter: blur(10px);
 }
 
 .status-dot {
-    width: 8px;
-    height: 8px;
-    display: inline-block;
-    border-radius: 50%;
+    width: 7px;
+    height: 7px;
     background: var(--green);
-    margin-right: 6px;
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--green);
+}
+
+.study-id {
+    background: rgba(5,9,20,.75);
+    border: 1px solid var(--border);
+    padding: 8px 11px;
+    border-radius: 20px;
+    font-size: 11px;
+    color: var(--muted);
 }
 
 .viewer-controls {
     position: absolute;
-    bottom: 18px;
+    bottom: 16px;
     left: 50%;
     transform: translateX(-50%);
+    z-index: 5;
     display: flex;
-    gap: 8px;
-    z-index: 10;
+    gap: 6px;
+    background: rgba(5,9,20,.8);
+    border: 1px solid var(--border);
+    padding: 6px;
+    border-radius: 12px;
 }
 
 .viewer-controls button {
-    border: 1px solid var(--border);
-    background: rgba(4,15,27,.85);
-    color: white;
-    border-radius: 9px;
-    padding: 9px 13px;
-    cursor: pointer;
-}
-
-.hint {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
+    background: #0b1425;
     color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 7px 10px;
+    border-radius: 7px;
     font-size: 11px;
 }
 
-/* ---------------- FINDINGS ---------------- */
+.viewer-controls button:hover {
+    color: white;
+    border-color: var(--cyan);
+}
 
-.finding {
-    padding: 15px;
-    border: 1px solid var(--border);
+.viewer-hint {
+    position: absolute;
+    bottom: 75px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #60728b;
+    font-size: 11px;
+    z-index: 5;
+    white-space: nowrap;
+}
+
+.ai-status {
+    padding: 12px;
     border-radius: 12px;
-    margin-bottom: 10px;
-    background: rgba(255,255,255,.025);
+    background: rgba(34,211,238,.05);
+    border: 1px solid rgba(34,211,238,.15);
+    margin-bottom: 14px;
 }
 
-.finding-title {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 7px;
-}
-
-.finding-title strong {
-    font-size: 13px;
-}
-
-.finding p {
-    font-size: 12px;
+.ai-status-title {
+    font-size: 11px;
     color: var(--muted);
-    line-height: 1.5;
+    margin-bottom: 5px;
 }
 
-.warning {
+.ai-status-value {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--cyan);
+}
+
+.result-card {
+    padding: 13px;
+    border-radius: 12px;
+    background: #091222;
+    border: 1px solid var(--border);
+    margin-bottom: 10px;
+}
+
+.result-title {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 6px;
+}
+
+.result-value {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.result-value.warning {
     color: var(--yellow);
 }
 
-.danger {
-    color: var(--red);
-}
-
-.success {
+.result-value.normal {
     color: var(--green);
 }
 
-.confidence {
-    margin-top: 10px;
+.result-value.danger {
+    color: var(--red);
 }
 
-.confidence-bar {
-    height: 6px;
-    background: rgba(255,255,255,.08);
-    border-radius: 20px;
-    overflow: hidden;
-    margin-top: 6px;
+.result-value.info {
+    color: var(--cyan);
 }
 
-.confidence-fill {
-    height: 100%;
-    width: 94%;
-    background: var(--cyan);
-    border-radius: 20px;
+.region {
+    margin-top: 14px;
+    padding: 10px 12px;
+    border-left: 3px solid var(--cyan);
+    background: rgba(34,211,238,.04);
+    font-size: 12px;
+    color: var(--muted);
 }
 
-/* ---------------- STATS ---------------- */
+.report-btn {
+    width: 100%;
+    margin-top: 5px;
+    padding: 11px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: #0d1729;
+    color: white;
+}
 
 .stats {
+    max-width: 1400px;
+    margin: 0 auto 30px;
+    padding: 0 28px;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4,1fr);
     gap: 12px;
-    margin-bottom: 70px;
 }
 
 .stat {
     padding: 22px;
-    background: var(--panel);
     border: 1px solid var(--border);
-    border-radius: 16px;
+    border-radius: 15px;
+    background: rgba(11,18,32,.75);
 }
 
-.stat strong {
-    display: block;
+.stat-number {
     font-size: 27px;
+    font-weight: 900;
     color: var(--cyan);
 }
 
-.stat span {
+.stat-label {
     color: var(--muted);
+    margin-top: 5px;
     font-size: 12px;
 }
 
-/* ---------------- PROCESSING ---------------- */
+.report-section {
+    max-width: 1400px;
+    margin: auto;
+    padding: 0 28px 60px;
+}
+
+.report {
+    border: 1px solid var(--border);
+    background: rgba(11,18,32,.85);
+    border-radius: 18px;
+    padding: 24px;
+}
+
+.report h2 {
+    margin-bottom: 18px;
+}
+
+.report-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.report-item {
+    padding: 15px;
+    border: 1px solid var(--border);
+    background: #091222;
+    border-radius: 12px;
+}
+
+.report-item strong {
+    display: block;
+    color: var(--cyan);
+    margin-bottom: 7px;
+    font-size: 12px;
+}
+
+.report-item span {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.disclaimer {
+    margin-top: 15px;
+    border: 1px solid rgba(245,158,11,.25);
+    background: rgba(245,158,11,.05);
+    color: #c9b487;
+    padding: 14px;
+    border-radius: 12px;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+footer {
+    border-top: 1px solid var(--border);
+    text-align: center;
+    padding: 25px;
+    color: #60728b;
+    font-size: 11px;
+}
 
 .processing {
-    display: none;
     position: fixed;
     inset: 0;
-    background: rgba(2,8,15,.86);
+    background: rgba(2,6,15,.88);
     backdrop-filter: blur(12px);
-    z-index: 500;
-    place-items: center;
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.processing.show {
+    display: flex;
 }
 
 .processing-card {
-    width: min(450px, 90%);
-    background: #0b1b2d;
+    width: min(420px, 90%);
+    background: #0b1425;
     border: 1px solid var(--border);
     border-radius: 20px;
     padding: 30px;
     text-align: center;
+    box-shadow: 0 30px 100px rgba(0,0,0,.5);
 }
 
 .loader {
-    width: 65px;
-    height: 65px;
-    margin: 0 auto 20px;
-    border-radius: 50%;
-    border: 4px solid rgba(255,255,255,.08);
+    width: 55px;
+    height: 55px;
+    border: 4px solid #20314a;
     border-top-color: var(--cyan);
+    border-radius: 50%;
     animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
 }
 
 @keyframes spin {
@@ -467,117 +566,108 @@ input[type=file] {
     }
 }
 
-.processing-card h2 {
-    margin-bottom: 10px;
+.processing-title {
+    font-size: 19px;
+    font-weight: 800;
 }
 
-.processing-card p {
+.processing-message {
+    margin-top: 9px;
     color: var(--muted);
     font-size: 13px;
 }
 
-.progress {
-    height: 7px;
-    background: rgba(255,255,255,.08);
-    border-radius: 20px;
-    margin-top: 22px;
-    overflow: hidden;
-}
-
-.progress-inner {
-    height: 100%;
-    width: 0%;
-    background: var(--cyan);
-    transition: width .4s;
-}
-
-/* ---------------- REPORT ---------------- */
-
-.report {
-    margin-bottom: 80px;
-}
-
-.report-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-}
-
-.report-card {
-    padding: 22px;
-    background: var(--panel);
+.toast {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    max-width: 380px;
+    background: #101a2d;
     border: 1px solid var(--border);
-    border-radius: 15px;
+    padding: 14px 17px;
+    border-radius: 12px;
+    color: white;
+    z-index: 2000;
+    display: none;
+    box-shadow: 0 20px 50px rgba(0,0,0,.4);
 }
 
-.report-card h3 {
-    margin-bottom: 12px;
+.toast.show {
+    display: block;
 }
 
-.report-card p,
-.report-card li {
-    color: var(--muted);
-    line-height: 1.7;
-    font-size: 13px;
+.toast.error {
+    border-color: rgba(239,68,68,.5);
 }
 
-.report-card ul {
-    padding-left: 18px;
+.toast.success {
+    border-color: rgba(34,197,94,.5);
 }
 
-/* ---------------- FOOTER ---------------- */
-
-footer {
-    border-top: 1px solid var(--border);
-    padding: 30px;
-    text-align: center;
-    color: var(--muted);
-    font-size: 12px;
-}
-
-/* ---------------- MOBILE ---------------- */
-
-@media(max-width: 1100px) {
+@media(max-width:1100px) {
     .dashboard {
-        grid-template-columns: 250px 1fr;
+        grid-template-columns: 240px 1fr;
     }
 
-    .right-panel {
+    .dashboard > .panel:last-child {
         grid-column: 1 / -1;
     }
+
+    .viewer {
+        min-height: 580px;
+    }
 }
 
-@media(max-width: 750px) {
+@media(max-width:760px) {
     .navbar {
         padding: 0 14px;
     }
 
-    .nav-right .nav-btn {
+    .nav-actions .btn:first-child {
         display: none;
     }
 
     .hero {
-        padding-top: 45px;
+        padding: 35px 16px 20px;
     }
 
     .dashboard {
-        grid-template-columns: 1fr;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .dashboard .viewer {
+        order: 1;
+    }
+
+    .dashboard .panel:first-child {
+        order: 0;
+    }
+
+    .dashboard .panel:last-child {
+        order: 2;
     }
 
     .viewer {
-        min-height: 550px;
-    }
-
-    .viewer canvas {
-        min-height: 550px;
+        min-height: 500px;
     }
 
     .stats {
+        padding: 0 15px;
         grid-template-columns: 1fr 1fr;
+    }
+
+    .report-section {
+        padding: 0 15px 40px;
     }
 
     .report-grid {
         grid-template-columns: 1fr;
+    }
+
+    .hero h1 {
+        letter-spacing: -1.5px;
     }
 }
 </style>
@@ -585,34 +675,27 @@ footer {
 
 <body>
 
-<!-- NAVIGATION -->
-
+<!-- NAVBAR -->
 <nav class="navbar">
-
     <div class="logo">
         <div class="logo-icon">✚</div>
-        Med<span>Vision</span> AI
+        <span>MedVision AI</span>
     </div>
 
-    <div class="nav-right">
-        <button class="mode-btn" onclick="toggleMode()">
-            👤 Patient / Doctor
-        </button>
-
-        <button class="nav-btn primary" onclick="scrollToViewer()">
+    <div class="nav-actions">
+        <button class="btn" onclick="toggleMode()">Patient / Doctor</button>
+        <button class="btn btn-primary" onclick="document.getElementById('scanFile').click()">
             Open Scanner
         </button>
     </div>
-
 </nav>
 
 
 <!-- HERO -->
-
 <section class="hero">
 
     <div class="badge">
-        ● AI-POWERED MEDICAL IMAGING PLATFORM
+        ● AI-ASSISTED MEDICAL IMAGING
     </div>
 
     <h1>
@@ -621,157 +704,157 @@ footer {
     </h1>
 
     <p>
-        Upload medical imaging data and explore an interactive
-        3D anatomical visualization with AI-assisted bone,
-        fracture and structural analysis.
+        Upload a supported medical image and connect it to the
+        MedVision AI analysis pipeline. Explore a 3D anatomical
+        visualization and review AI-assisted results in one place.
     </p>
 
 </section>
 
 
 <!-- DASHBOARD -->
-
-<main class="container">
-
-<section class="dashboard" id="scanner">
+<section class="dashboard">
 
     <!-- LEFT PANEL -->
-
-    <aside class="panel">
+    <div class="panel">
 
         <div class="panel-header">
-            <h3>SCAN INPUT</h3>
-            <span class="success">● Ready</span>
+            Medical Scan
         </div>
 
         <div class="panel-body">
 
-            <label class="upload-box">
+            <div class="section-label">
+                Upload Scan
+            </div>
+
+            <div class="upload-box">
+
+                <div class="upload-icon">📡</div>
+
+                <strong>
+                    Upload Medical Image
+                </strong>
+
+                <p>
+                    JPG, JPEG, PNG, DCM or DICOM
+                </p>
 
                 <input
                     type="file"
                     id="scanFile"
-                    accept=".dcm,.dicom,.png,.jpg,.jpeg,.nii,.nii.gz"
+                    accept=".dcm,.dicom,.png,.jpg,.jpeg"
                     onchange="handleFile(this)"
                 >
 
-                <div class="upload-icon">📁</div>
-
-                <strong>
-                    Upload Medical Scan
-                </strong>
-
-                <small>
-                    DICOM, CT, X-Ray or supported image
-                </small>
-
-                <div class="file-name" id="fileName">
+                <div id="fileName" class="file-name">
                     No file selected
                 </div>
 
-            </label>
+            </div>
+
 
             <button
-                class="action-btn"
+                id="analyzeButton"
+                class="analyze-btn"
                 onclick="startAnalysis()"
             >
-                🧠 Start AI Analysis
+                🚀 Start AI Analysis
             </button>
 
 
-            <div class="section-title">
+            <div style="height:22px"></div>
+
+
+            <div class="section-label">
                 Anatomy
             </div>
 
-            <button
-                class="body-btn active"
-                onclick="selectBody('Full Skeleton', this)"
-            >
-                🦴 Full Skeleton
-                <small>All</small>
-            </button>
+            <div class="anatomy-grid">
 
-            <button
-                class="body-btn"
-                onclick="selectBody('Head', this)"
-            >
-                🧠 Head
-                <small>Skull</small>
-            </button>
+                <button
+                    class="anatomy-btn active"
+                    onclick="selectBody('Full Body', this)"
+                >
+                    Full Body
+                </button>
 
-            <button
-                class="body-btn"
-                onclick="selectBody('Spine', this)"
-            >
-                🦴 Spine
-                <small>Vertebrae</small>
-            </button>
+                <button
+                    class="anatomy-btn"
+                    onclick="selectBody('Head', this)"
+                >
+                    Head
+                </button>
 
-            <button
-                class="body-btn"
-                onclick="selectBody('Chest', this)"
-            >
-                🫁 Chest
-                <small>Thorax</small>
-            </button>
+                <button
+                    class="anatomy-btn"
+                    onclick="selectBody('Chest', this)"
+                >
+                    Chest
+                </button>
 
-            <button
-                class="body-btn"
-                onclick="selectBody('Arms', this)"
-            >
-                💪 Arms
-                <small>Upper limb</small>
-            </button>
+                <button
+                    class="anatomy-btn"
+                    onclick="selectBody('Spine', this)"
+                >
+                    Spine
+                </button>
 
-            <button
-                class="body-btn"
-                onclick="selectBody('Legs', this)"
-            >
-                🦵 Legs
-                <small>Lower limb</small>
-            </button>
+                <button
+                    class="anatomy-btn"
+                    onclick="selectBody('Arm', this)"
+                >
+                    Arm
+                </button>
 
-            <div class="section-title">
-                Viewer
+                <button
+                    class="anatomy-btn"
+                    onclick="selectBody('Leg', this)"
+                >
+                    Leg
+                </button>
+
             </div>
 
-            <button
-                class="action-btn secondary"
-                onclick="resetView()"
-            >
+
+            <button class="small-btn" onclick="resetView()">
                 ↻ Reset 3D View
             </button>
 
-            <button
-                class="action-btn secondary"
-                onclick="toggleSkeleton()"
-            >
+            <button class="small-btn" onclick="toggleSkeleton()">
                 ◉ Toggle Skeleton
             </button>
 
         </div>
 
-    </aside>
+    </div>
 
 
-    <!-- CENTER 3D VIEWER -->
+    <!-- 3D VIEWER -->
+    <div class="panel viewer">
 
-    <section class="panel viewer">
+        <div id="threeContainer"></div>
 
         <div class="viewer-top">
 
-            <div class="scan-status">
+            <div class="status">
                 <span class="status-dot"></span>
-                3D Anatomical Viewer
+                <span id="viewerStatus">
+                    3D Viewer Ready
+                </span>
             </div>
 
-            <div class="scan-status">
-                Study ID: MV-2026-001
+            <div class="study-id">
+                Study: <span id="studyId">MV-2026-001</span>
             </div>
 
         </div>
 
-        <div id="threeContainer"></div>
+
+        <div class="viewer-hint">
+            Drag to rotate • Scroll to zoom
+        </div>
+
 
         <div class="viewer-controls">
 
@@ -791,119 +874,130 @@ footer {
                 Right
             </button>
 
+            <button onclick="setView('top')">
+                Top
+            </button>
+
         </div>
 
-        <div class="hint">
-            Drag = Rotate • Wheel = Zoom • Click bone = Select
-        </div>
-
-    </section>
+    </div>
 
 
-    <!-- RIGHT PANEL -->
-
-    <aside class="panel right-panel">
+    <!-- AI PANEL -->
+    <div class="panel">
 
         <div class="panel-header">
-
-            <h3>AI ANALYSIS</h3>
-
-            <span class="success">
-                94% Confidence
-            </span>
-
+            AI Analysis
         </div>
 
         <div class="panel-body">
 
-            <div class="finding">
+            <div class="ai-status">
 
-                <div class="finding-title">
-                    <strong>Possible Fracture</strong>
-
-                    <span class="danger">
-                        ● Review
-                    </span>
+                <div class="ai-status-title">
+                    ANALYSIS STATUS
                 </div>
 
-                <p>
-                    AI model identified a region requiring
-                    clinical review in the displayed anatomical area.
-                </p>
-
-                <div class="confidence">
-
-                    <small>
-                        AI Confidence
-                    </small>
-
-                    <div class="confidence-bar">
-                        <div class="confidence-fill"></div>
-                    </div>
-
+                <div
+                    id="analysisStatus"
+                    class="ai-status-value"
+                >
+                    Waiting for scan
                 </div>
 
             </div>
 
 
-            <div class="finding">
+            <div class="result-card">
 
-                <div class="finding-title">
-                    <strong>Bone Structure</strong>
-
-                    <span class="success">
-                        Normal
-                    </span>
-
+                <div class="result-title">
+                    POSSIBLE FRACTURE
                 </div>
 
-                <p>
-                    Structural visualization is available
-                    for interactive inspection.
-                </p>
-
-            </div>
-
-
-            <div class="finding">
-
-                <div class="finding-title">
-                    <strong>Alignment</strong>
-
-                    <span class="warning">
-                        Review
-                    </span>
-
+                <div
+                    id="fractureResult"
+                    class="result-value info"
+                >
+                    Not analyzed
                 </div>
 
-                <p>
-                    Alignment assessment is available
-                    for clinician evaluation.
-                </p>
+            </div>
+
+
+            <div class="result-card">
+
+                <div class="result-title">
+                    BONE STRUCTURE
+                </div>
+
+                <div
+                    id="boneResult"
+                    class="result-value info"
+                >
+                    Not analyzed
+                </div>
 
             </div>
 
 
-            <div class="section-title">
-                Selected Region
+            <div class="result-card">
+
+                <div class="result-title">
+                    ALIGNMENT
+                </div>
+
+                <div
+                    id="alignmentResult"
+                    class="result-value info"
+                >
+                    Not analyzed
+                </div>
+
             </div>
 
-            <div class="finding">
 
+            <div class="result-card">
+
+                <div class="result-title">
+                    MODEL
+                </div>
+
+                <div
+                    id="modelResult"
+                    class="result-value info"
+                >
+                    Not connected
+                </div>
+
+            </div>
+
+
+            <div class="result-card">
+
+                <div class="result-title">
+                    CONFIDENCE
+                </div>
+
+                <div
+                    id="confidenceResult"
+                    class="result-value info"
+                >
+                    Not available
+                </div>
+
+            </div>
+
+
+            <div class="region">
+                Selected region:
                 <strong id="selectedBone">
-                    Full Skeleton
+                    Full Body
                 </strong>
-
-                <p style="margin-top:8px;">
-                    Click a bone on the 3D model
-                    to inspect the region.
-                </p>
-
             </div>
 
 
             <button
-                class="action-btn"
+                class="report-btn"
                 onclick="generateReport()"
             >
                 📄 Generate Medical Report
@@ -911,140 +1005,52 @@ footer {
 
         </div>
 
-    </aside>
+    </div>
 
 </section>
 
 
-<!-- STATISTICS -->
-
+<!-- STATS -->
 <section class="stats">
 
     <div class="stat">
-        <strong>3D</strong>
-        <span>Anatomical Visualization</span>
+        <div class="stat-number">3D</div>
+        <div class="stat-label">Interactive Visualization</div>
     </div>
 
     <div class="stat">
-        <strong>AI</strong>
-        <span>Assisted Analysis</span>
+        <div class="stat-number">AI</div>
+        <div class="stat-label">Analysis Pipeline</div>
     </div>
 
     <div class="stat">
-        <strong>360°</strong>
-        <span>Interactive Viewing</span>
+        <div class="stat-number">360°</div>
+        <div class="stat-label">Anatomical View</div>
     </div>
 
     <div class="stat">
-        <strong>DICOM</strong>
-        <span>Future Imaging Support</span>
+        <div class="stat-number">DICOM</div>
+        <div class="stat-label">Medical Imaging Support</div>
     </div>
 
 </section>
 
 
 <!-- REPORT -->
+<section class="report-section">
 
-<section class="report">
+    <div class="report">
 
-    <div class="panel-header">
-        <h2>Medical Analysis Report</h2>
-        <button
-            class="nav-btn primary"
-            onclick="generateReport()"
-        >
-            Generate
-        </button>
-    </div>
+        <h2>
+            Medical Imaging Report
+        </h2>
 
-    <div class="report-grid">
+        <div class="report-grid">
 
-        <div class="report-card">
+            <div class="report-item">
 
-            <h3>Study Information</h3>
+                <strong>
+                    STUDY INFORMATION
+                </strong>
 
-            <p>
-                Study ID: <strong>MV-2026-001</strong>
-            </p>
-
-            <p>
-                Modality: CT / X-Ray
-            </p>
-
-            <p>
-                Analysis Engine: MedVision AI
-            </p>
-
-            <p>
-                Status: AI-assisted analysis completed
-            </p>
-
-        </div>
-
-
-        <div class="report-card">
-
-            <h3>AI Findings</h3>
-
-            <ul>
-                <li>
-                    Possible fracture region identified.
-                </li>
-
-                <li>
-                    3D anatomical visualization generated.
-                </li>
-
-                <li>
-                    Bone structure available for inspection.
-                </li>
-
-                <li>
-                    Clinical review recommended.
-                </li>
-            </ul>
-
-        </div>
-
-
-        <div class="report-card">
-
-            <h3>3D Visualization</h3>
-
-            <p>
-                The clinician can rotate, zoom and inspect
-                the reconstructed anatomical structure.
-                Specific anatomical regions can be selected
-                for detailed review.
-            </p>
-
-        </div>
-
-
-        <div class="report-card">
-
-            <h3>Important Notice</h3>
-
-            <p>
-                This prototype demonstrates an AI-assisted
-                visualization workflow. AI-generated findings
-                should not be treated as a final diagnosis.
-                Medical decisions must be made by qualified
-                healthcare professionals using appropriate
-                clinical information.
-            </p>
-
-        </div>
-
-    </div>
-
-</section>
-
-</main>
-
-
-<footer>
-
-    MedVision AI © 2026 |
-    AI-assisted medical imaging prototype |
-    For research and demonstration
+                <span id="reportSt
